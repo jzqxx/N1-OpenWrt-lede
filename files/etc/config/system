@@ -10,11 +10,11 @@ config system
 	option cronloglevel '9'
 
 config timeserver 'ntp'
-	option enabled '1'
-	list server 'ntp1.aliyun.com'
-	list server 'time1.cloud.tencent.com'
+	option use_dhcp '0'
+	list server 'ntp.tencent.com'
 
 config led
+	option name 'default'
 	option sysfs 'n1:white:status'
 	option trigger 'none'
-	option default '1'
+	option default '0'
