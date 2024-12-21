@@ -1,18 +1,15 @@
 name: Build OpenWrt for N1
 
 on:
- workflow_dispatch:
-   inputs:
-      ssh:
-        description: 'SSH connection to Actions'
-        required: false
-        default: 'false'
+  workflow_dispatch:
+  schedule:
+    - cron: "0 16 * * *"
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   FEEDS_CONF: config/feeds.conf.default
-  CONFIG_FILE: config/6.config
+  CONFIG_FILE: config/.config
   DIY_P1_SH: config/diy-part1.sh
   DIY_P2_SH: config/diy-part2.sh
   TZ: Asia/Shanghai
@@ -36,9 +33,15 @@ jobs:
         haskell: true
         large-packages: true
         swap-storage: true
-    
+        
+    - name: Update Rustup
+      run: |
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+        export PATH="$HOME/.cargo/bin:$PATH"
+        rustup update
+          
     - name: Checkout
-      uses: actions/checkout@v3.1.0
+      uses: actions/checkout@v3
 
     - name: Display Current Time
       run: |
@@ -140,7 +143,8 @@ jobs:
       uses: ophub/flippy-openwrt-actions@main
       env:
         OPENWRT_ARMVIRT: openwrt/bin/targets/*/*/*.tar.gz
-        KERNEL_VERSION_NAME: 5.15.137
+        KERNEL_VERSION_NAME: 5.15.158
+        KERNEL_AUTO_LATEST: false
         PACKAGE_SOC: s905d
         SW_FLOWOFFLOAD: 0
         HW_FLOWOFFLOAD: 0
@@ -159,7 +163,7 @@ jobs:
         body: |
           首次使用建议全新刷入
           * 固件基础信息
-          IP: 192.168.1.2
+          IP: 192.168.123.2
           账户: root
           密码: password
         
